@@ -25,6 +25,33 @@ const registrarUsuario = async(req, res) => {
           });
           
           res.json(usuario)
+          
+
+
+    } catch (error) {
+        
+    }
+    
+
+}
+const autenticarUsuario = async(req, res) => {
+    const{email, password} = req.body
+    if([nombre, email, password].includes('')){
+        return res.json({msg: "Hay campos vacios"});
+    }
+
+    try {
+        //Evitar usuarios duplicados con (email)
+
+        const existeUsuario = await Usuario.findOne({where:{email}})
+        if(!existeUsuario){
+            const error = new Error('Accion no valida')
+            return res.status(404).json({msg:error.message})
+        }
+        existeUsuario.nombre = nombre || existeUsuario.nombre;
+        existeUsuario.email = email || existeUsuario.email;
+        const usuarioEditar = await existeUsuario.save()
+        res.json(usuarioEditar)
 
 
     } catch (error) {
@@ -34,12 +61,21 @@ const registrarUsuario = async(req, res) => {
 
 }
 
+const editarUsuario = (req, res) => {
 
+}
+
+const obtenerPerfil = (req, res) => {
+    
+}
 
 
 
 
 
 export {
-    registrarUsuario
+    registrarUsuario,
+    editarUsuario,
+    obtenerPerfil,
+    autenticarUsuario
 }
