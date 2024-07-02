@@ -2,6 +2,8 @@
 
 import Usuario from "../models/Usuario.js"
 import { generarId } from "../helpers/token.js";
+import bcrypt from 'bcrypt'
+
 
 const registrarUsuario = async(req, res) => {
     const{nombre, email, password} = req.body
@@ -78,41 +80,64 @@ const generarCambio = async(req, res) => {
 
 }
 
+const validarCambio = async(req, res) => {
+    const{token} = req.params
+    const usuario = await Usuario.findOne({where:{token}});
+    if(!usuario) {
+        return res.status(404).json({msg:'Token no valido', error:true})
+    }
+    res.json({msg:"Validacion correcta, ya puedes ingresar tu nueva contraseña"})
+}
+const cambiarPassword = async(req, res) => {
+    const{token} = req.params
+    const{password} = req.body
+    const usuario = await Usuario.findOne({where:{token}});
+    if(!usuario) {
+        return res.status(404).json({msg:'Token no valido', error:true})
+    }
+    const salt = await bcrypt.genSalt(10)
+    usuario.password = await bcrypt.hash(password, salt)
+    usuario.token = null;
+    await usuario.save()
 
+    res.json({msg:"Contraseña actualizada correctamente, ya puedes iniciar sesión"})
+}
 
 
 
 
 const autenticarUsuario = async(req, res) => {
     const{email, password} = req.body
-    if([nombre, email, password].includes('')){
+    if([email, password].includes('')){
         return res.json({msg: "Hay campos vacios"});
     }
 
-    try {
+   
         //Evitar usuarios duplicados con (email)
 
-        const existeUsuario = await Usuario.findOne({where:{email}})
-        if(!existeUsuario){
-            const error = new Error('Accion no valida')
+        const usuario = await Usuario.findOne({where:{email}})
+        if(!usuario){
+            const error = new Error('El email no existe o no esta confirmado')
             return res.status(404).json({msg:error.message})
         }
-        existeUsuario.nombre = nombre || existeUsuario.nombre;
-        existeUsuario.email = email || existeUsuario.email;
-        const usuarioEditar = await existeUsuario.save()
-        res.json(usuarioEditar)
+        if(!usuario.confirmado){
+            const error = new Error('El email no existe o no esta confirmado')
+            return res.status(404).json({msg:error.message})
+        }
 
+       
+        if(!usuario.validarPassword(password)){
+            const error = new Error('Email o contraseña no validos')
+            return res.status(404).json({msg:error.message})
+        }
 
-    } catch (error) {
-        
-    }
-    
-
+        res.json(usuario)
 }
 
 const editarUsuario = (req, res) => {
 
 }
+
 
 const obtenerPerfil = (req, res) => {
     
@@ -128,5 +153,7 @@ export {
     obtenerPerfil,
     autenticarUsuario,
     generarCambio,
-    confirmarCuenta
+    confirmarCuenta,
+    validarCambio,
+    cambiarPassword
 }

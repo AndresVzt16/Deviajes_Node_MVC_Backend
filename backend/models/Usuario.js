@@ -28,6 +28,7 @@ const Usuario = db.define('usuarios', {
     },
     token:{
         type: DataTypes.STRING,
+
     },
    
     
@@ -41,5 +42,9 @@ const Usuario = db.define('usuarios', {
     }
 }
 )
+
+Usuario.prototype.validarPassword = function(password) {
+    return bcrypt.compareSync(password, this.password)
+}
 
 export default Usuario

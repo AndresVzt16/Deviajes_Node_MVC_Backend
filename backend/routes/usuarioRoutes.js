@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { registrarUsuario, editarUsuario, autenticarUsuario, obtenerPerfil, generarCambio, confirmarCuenta } from "../controllers/usuariosControllers.js";
+import { registrarUsuario, editarUsuario, autenticarUsuario, obtenerPerfil, generarCambio, confirmarCuenta, validarCambio, cambiarPassword } from "../controllers/usuariosControllers.js";
 const router = Router();
 
 
@@ -13,9 +13,9 @@ router.get('/confirmar/:token', confirmarCuenta)
 
 router.post('/olvide-password', generarCambio)
 
-/* router.route('/olvide-password/:token')
+router.route('/olvide-password/:token')
     .get(validarCambio)
-    .post(cambiarPassword) */
+    .post(cambiarPassword)
 
 
 
