@@ -6,7 +6,7 @@ import { generarId } from "../helpers/token.js";
 const registrarUsuario = async(req, res) => {
     const{nombre, email, password} = req.body
     if([nombre, email, password].includes('')){
-        return res.json({msg: "Hay campos vacios"});
+        return res.json({msg: "Hay campos vacios", error: true});
     }
 
     try {
@@ -15,7 +15,7 @@ const registrarUsuario = async(req, res) => {
         const existeUsuario = await Usuario.findOne({where:{email}})
         if(existeUsuario){
             const error = new Error('El usuario ya esta registrado')
-            return res.status(401).json({msg:error.message})
+            return res.status(401).json({msg:error.message, error: true})
         }
         const usuario = await Usuario.create({
             nombre,
@@ -34,6 +34,33 @@ const registrarUsuario = async(req, res) => {
     
 
 }
+
+//Olvide Password
+
+const generarCambio = async(req, res) => {
+    const{email} = req.body
+    const usuario = await Usuario.findOne({where:{email}})
+    if(!usuario) {
+        return res.status(404).json({msg:'El email no existe o no está confirmado', error:true})
+ 
+    }
+
+    try {
+        usuario.token = generarId()
+        usuario.save()
+        res.json({msg:`Se ha enviado a ${usuario.email} las instrucciones para el cambio de contraseña.`})
+    } catch (error) {
+        const e = new Error('No se pudo generar el cambio');
+        res.status(400).json({msg:e.message})
+    }
+
+}
+
+
+
+
+
+
 const autenticarUsuario = async(req, res) => {
     const{email, password} = req.body
     if([nombre, email, password].includes('')){
@@ -77,5 +104,6 @@ export {
     registrarUsuario,
     editarUsuario,
     obtenerPerfil,
-    autenticarUsuario
+    autenticarUsuario,
+    generarCambio
 }
