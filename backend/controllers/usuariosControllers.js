@@ -35,19 +35,41 @@ const registrarUsuario = async(req, res) => {
 
 }
 
+//Confirmar cuenta
+
+const confirmarCuenta = async(req, res) => {
+    const{token} = req.params
+    const usuario = await Usuario.findOne({where:{token}})
+    if(!usuario) {
+        return res.status(404).json({msg:'Token no valido', error:true})
+    }
+    try {
+        usuario.token = null
+        usuario.confirmado = true
+        await usuario.save()
+        res.json(usuario)
+    } catch (error) {
+        
+    }
+}
+
 //Olvide Password
 
 const generarCambio = async(req, res) => {
     const{email} = req.body
     const usuario = await Usuario.findOne({where:{email}})
+    console.log(usuario)
     if(!usuario) {
+        
         return res.status(404).json({msg:'El email no existe o no está confirmado', error:true})
  
     }
-
+    if(!usuario.confirmado) {
+        return res.status(400).json({msg:'El email no existe o no está confirmado', error:true})
+    }
     try {
         usuario.token = generarId()
-        usuario.save()
+        await usuario.save()
         res.json({msg:`Se ha enviado a ${usuario.email} las instrucciones para el cambio de contraseña.`})
     } catch (error) {
         const e = new Error('No se pudo generar el cambio');
@@ -105,5 +127,6 @@ export {
     editarUsuario,
     obtenerPerfil,
     autenticarUsuario,
-    generarCambio
+    generarCambio,
+    confirmarCuenta
 }

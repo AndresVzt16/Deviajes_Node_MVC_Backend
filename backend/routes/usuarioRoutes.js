@@ -1,12 +1,15 @@
 import { Router } from "express";
 
-import { registrarUsuario, editarUsuario, autenticarUsuario, obtenerPerfil, generarCambio } from "../controllers/usuariosControllers.js";
+import { registrarUsuario, editarUsuario, autenticarUsuario, obtenerPerfil, generarCambio, confirmarCuenta } from "../controllers/usuariosControllers.js";
 const router = Router();
 
 
 //Public
 router.post('/login', autenticarUsuario)
 router.post('/', registrarUsuario)
+
+
+router.get('/confirmar/:token', confirmarCuenta)
 
 router.post('/olvide-password', generarCambio)
 
