@@ -1,6 +1,7 @@
 import { Router } from "express";
 
-import { registrarUsuario, editarUsuario, autenticarUsuario, obtenerPerfil, generarCambio, confirmarCuenta, validarCambio, cambiarPassword } from "../controllers/usuariosControllers.js";
+import checkAuth from "../middlewares/checkAuth.js";
+import { registrarUsuario, autenticarUsuario, obtenerPerfil, generarCambio, confirmarCuenta, validarCambio, cambiarPassword, editarPerfil } from "../controllers/usuariosControllers.js";
 const router = Router();
 
 
@@ -20,7 +21,10 @@ router.route('/olvide-password/:token')
 
 
 //Private
-router.post('/perfil',obtenerPerfil)
+router.route('/perfil')
+    .get(checkAuth,obtenerPerfil)
+    
+router.put('/perfil/:id', checkAuth, editarPerfil)
 
 
 

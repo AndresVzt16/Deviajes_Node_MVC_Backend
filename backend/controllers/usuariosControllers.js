@@ -1,13 +1,13 @@
 
 
 import Usuario from "../models/Usuario.js"
-import { generarId } from "../helpers/token.js";
+import { generarId, generarJWT } from "../helpers/token.js";
 import bcrypt from 'bcrypt'
 
 
 const registrarUsuario = async(req, res) => {
-    const{nombre, email, password} = req.body
-    if([nombre, email, password].includes('')){
+    const{nombre, email, password, telefono} = req.body
+    if([nombre, email, password, telefono].includes('')){
         return res.json({msg: "Hay campos vacios", error: true});
     }
 
@@ -23,6 +23,7 @@ const registrarUsuario = async(req, res) => {
             nombre,
             email,
             password,
+            telefono,
             token: generarId()
           });
           
@@ -131,29 +132,39 @@ const autenticarUsuario = async(req, res) => {
             return res.status(404).json({msg:error.message})
         }
 
-        res.json(usuario)
-}
+        const token = generarJWT(usuario.id);
 
-const editarUsuario = (req, res) => {
-
+        res.json({ token });
+        
 }
 
 
 const obtenerPerfil = (req, res) => {
-    
+    const{usuario} = req
+    res.json(usuario)
 }
 
+const editarPerfil = async(req, res) => {
+    const{id} = req.params
+    const{nombre, email, telefono} = req.body
+    const usuario = await Usuario.findOne({where:{id}})
 
+    usuario.nombre = nombre || usuario.nombre
+    
+    usuario.email = email || usuario.email
+    usuario.telefono = telefono || usuario.telefono
+    await usuario.save()
+    res.json(usuario)
 
-
+}
 
 export {
     registrarUsuario,
-    editarUsuario,
     obtenerPerfil,
     autenticarUsuario,
     generarCambio,
     confirmarCuenta,
     validarCambio,
-    cambiarPassword
+    cambiarPassword,
+    editarPerfil
 }
