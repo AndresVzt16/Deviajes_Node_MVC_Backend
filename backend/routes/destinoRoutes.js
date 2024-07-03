@@ -12,11 +12,11 @@ const router = Router();
 
 router.get("/", obtenerDestinos);
 
-router.post("/nuevo-destino", registrarDestino);
+router.post("/nuevo-destino", checkAuthAdmin,registrarDestino);
 
 router.route("/:id")
   .get(checkAuthAdmin,obtenerDestino)
-  .put(checkAuthAdmin,editarDestino)
-  .delete(checkAuthAdmin,eliminarDestino);
+  .put(checkAuthAdmin,checkAuthAdmin,editarDestino)
+  .delete(checkAuthAdmin,checkAuthAdmin,eliminarDestino);
 
 export default router;

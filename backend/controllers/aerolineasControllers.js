@@ -23,13 +23,15 @@ const obtenerAerolineas = async(req, res) => {
 
 const editarAerolinea = async(req, res) => {
     const{id} = req.params
-    const{nombre} = req.body
+    const{nombre, email, telefono} = req.body
     const aerolinea = await Aerolinea.findOne({where:{id}})
     if(!aerolinea){
         const error = new Error('No se obtuvo la aerolinea')
         return res.status(404).json({msg:error.message})
     }
     aerolinea.nombre = nombre || aerolinea.nombre
+    aerolinea.email = email || aerolinea.email
+    aerolinea.telefono = telefono || aerolinea.telefono
 
     await aerolinea.save()
 
@@ -39,7 +41,7 @@ const editarAerolinea = async(req, res) => {
 
 const eliminarAerolinea = async(req, res) => {
     const{id} = req.params
-    const aerolinea = await Aerolinea.findOne({chere:{id}})
+    const aerolinea = await Aerolinea.findOne({where:{id}})
     if(!aerolinea){
         const error = new Error('No se obtuvo la aerolinea')
         return res.status(404).json({msg:error.message})
@@ -51,18 +53,18 @@ const eliminarAerolinea = async(req, res) => {
 }
 
 const registrarAerolinea = async(req, res) => {
-    const {nombre} = req.body
+    const {nombre, email, telefono} = req.body
     const aerolineaExiste = await Aerolinea.findOne({where:{nombre}})
     if(aerolineaExiste){
         return res.status(400).json({msg:"La aerolinea ya esta registrada"});
     }
     try {
-        const aerolinea = await Aerolinea.create({nombre})
+        const aerolinea = await Aerolinea.create({nombre, email, telefono})
         res.json(aerolinea)
     } catch (error) {
-        console.log(error)
-        /* const e = new Error('No se pudo almacenar la aerolinea')
-        return res.status(400).json({msg:e.message}) */
+       
+        const e = new Error('No se pudo almacenar la aerolinea')
+        return res.status(400).json({msg:e.message})
     }
 }
 

@@ -14,6 +14,7 @@ dotenv.config();
 try {
     await db.authenticate()
     await db.sync()
+    
     console.log('Conexion a db correcta')
 } catch (error) {
     console.log(error)

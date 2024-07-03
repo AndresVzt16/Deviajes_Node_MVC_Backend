@@ -6,9 +6,16 @@ const Destino = db.define('destinos', {
         type:DataTypes.STRING,
         allowNull:false,
     },
+    pais:{
+        type:DataTypes.STRING,
+        allowNull:false,
+    },
     imagen: {
         type:DataTypes.STRING,
     }
 })
 export default Destino
+
+
+
 
