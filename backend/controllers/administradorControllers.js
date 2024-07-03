@@ -1,11 +1,11 @@
 
 
-import Usuario from "../models/Usuario.js"
+import Administrador from "../models/Administrador.js"
 import { generarId, generarJWT } from "../helpers/token.js";
 import bcrypt from 'bcrypt'
 
 
-const registrarUsuario = async(req, res) => {
+const registrarAdministrador = async(req, res) => {
     const{nombre, email, password, telefono} = req.body
     if([nombre, email, password, telefono].includes('')){
         return res.json({msg: "Hay campos vacios", error: true});
@@ -14,12 +14,12 @@ const registrarUsuario = async(req, res) => {
     try {
         //Evitar usuarios duplicados con (email)
 
-        const existeUsuario = await Usuario.findOne({where:{email}})
-        if(existeUsuario){
+        const existeAdministrador = await Administrador.findOne({where:{email}})
+        if(existeAdministrador){
             const error = new Error('El usuario ya esta registrado')
             return res.status(401).json({msg:error.message, error: true})
         }
-        const usuario = await Usuario.create({
+        const administrador = await Administrador.create({
             nombre,
             email,
             password,
@@ -27,12 +27,12 @@ const registrarUsuario = async(req, res) => {
             token: generarId()
           });
           
-          res.json(usuario)
+          res.json(administrador)
           
 
 
     } catch (error) {
-        
+     console.log(error)   
     }
     
 
@@ -42,15 +42,15 @@ const registrarUsuario = async(req, res) => {
 
 const confirmarCuenta = async(req, res) => {
     const{token} = req.params
-    const usuario = await Usuario.findOne({where:{token}})
-    if(!usuario) {
+    const administrador = await Administrador.findOne({where:{token}})
+    if(!administrador) {
         return res.status(404).json({msg:'Token no valido', error:true})
     }
     try {
-        usuario.token = null
-        usuario.confirmado = true
-        await usuario.save()
-        res.json(usuario)
+        administrador.token = null
+        administrador.confirmado = true
+        await administrador.save()
+        res.json(administrador)
     } catch (error) {
         
     }
@@ -60,20 +60,20 @@ const confirmarCuenta = async(req, res) => {
 
 const generarCambio = async(req, res) => {
     const{email} = req.body
-    const usuario = await Usuario.findOne({where:{email}})
-    console.log(usuario)
-    if(!usuario) {
+    const administrador = await Administrador.findOne({where:{email}})
+    console.log(administrador)
+    if(!administrador) {
         
         return res.status(404).json({msg:'El email no existe o no está confirmado', error:true})
  
     }
-    if(!usuario.confirmado) {
+    if(!administrador.confirmado) {
         return res.status(400).json({msg:'El email no existe o no está confirmado', error:true})
     }
     try {
-        usuario.token = generarId()
-        await usuario.save()
-        res.json({msg:`Se ha enviado a ${usuario.email} las instrucciones para el cambio de contraseña.`})
+        administrador.token = generarId()
+        await administrador.save()
+        res.json({msg:`Se ha enviado a ${administrador.email} las instrucciones para el cambio de contraseña.`})
     } catch (error) {
         const e = new Error('No se pudo generar el cambio');
         res.status(400).json({msg:e.message})
@@ -83,8 +83,8 @@ const generarCambio = async(req, res) => {
 
 const validarCambio = async(req, res) => {
     const{token} = req.params
-    const usuario = await Usuario.findOne({where:{token}});
-    if(!usuario) {
+    const administrador = await Administrador.findOne({where:{token}});
+    if(!administrador) {
         return res.status(404).json({msg:'Token no valido', error:true})
     }
     res.json({msg:"Validacion correcta, ya puedes ingresar tu nueva contraseña"})
@@ -92,14 +92,14 @@ const validarCambio = async(req, res) => {
 const cambiarPassword = async(req, res) => {
     const{token} = req.params
     const{password} = req.body
-    const usuario = await Usuario.findOne({where:{token}});
-    if(!usuario) {
+    const administrador = await Administrador.findOne({where:{token}});
+    if(!administrador) {
         return res.status(404).json({msg:'Token no valido', error:true})
     }
     const salt = await bcrypt.genSalt(10)
-    usuario.password = await bcrypt.hash(password, salt)
-    usuario.token = null;
-    await usuario.save()
+    administrador.password = await bcrypt.hash(password, salt)
+    administrador.token = null;
+    await administrador.save()
 
     res.json({msg:"Contraseña actualizada correctamente, ya puedes iniciar sesión"})
 }
@@ -107,32 +107,30 @@ const cambiarPassword = async(req, res) => {
 
 
 
-const autenticarUsuario = async(req, res) => {
+const autenticarAdministrador = async(req, res) => {
     const{email, password} = req.body
     if([email, password].includes('')){
         return res.json({msg: "Hay campos vacios"});
     }
-
-   
         //Evitar usuarios duplicados con (email)
 
-        const usuario = await Usuario.findOne({where:{email}})
-        if(!usuario){
+        const administrador = await Administrador.findOne({where:{email}})
+        if(!administrador){
             const error = new Error('El email no existe o no esta confirmado')
             return res.status(404).json({msg:error.message})
         }
-        if(!usuario.confirmado){
+        if(!administrador.confirmado){
             const error = new Error('El email no existe o no esta confirmado')
             return res.status(404).json({msg:error.message})
         }
 
        
-        if(!usuario.validarPassword(password)){
+        if(!administrador.validarPassword(password)){
             const error = new Error('Email o contraseña no validos')
             return res.status(404).json({msg:error.message})
         }
 
-        const token = generarJWT(usuario.id);
+        const token = generarJWT(administrador.id);
 
         res.json({ token });
         
@@ -140,40 +138,42 @@ const autenticarUsuario = async(req, res) => {
 
 
 const obtenerPerfil = (req, res) => {
-    const{usuario} = req
-    res.json(usuario)
+    const{administrador} = req
+    res.json(administrador)
 }
 
 const editarPerfil = async(req, res) => {
     const{id} = req.params
     const{nombre, email, telefono} = req.body
-    const usuario = await Usuario.findOne({where:{id}})
-    
-    if(!usuario){
+
+
+    const administrador = await Administrador.findOne({where:{id}})
+
+    if(!administrador){
         const error = new Error('Accion no valida')
         return res.status(400).json({msg:error.message})
     }
-    if(id !== req.usuario.id) {
+    if(id !== req.administrador.id) {
         const error = new Error('Accion no valida')
         return res.status(400).json({msg:error.message})
     }
-    usuario.nombre = nombre || usuario.nombre    
-    usuario.email = email || usuario.email
-    usuario.telefono = telefono || usuario.telefono
+    administrador.nombre = nombre || administrador.nombre    
+    administrador.email = email || administrador.email
+    administrador.telefono = telefono || administrador.telefono
     try {
-        await usuario.save()
+        await administrador.save()
     } catch (error) {
         return res.status(403).json({msg:"Hubo un error al guardar los cambios"})
     }
     
-    res.json(usuario)
+    res.json(administrador)
 
 }
 
 export {
-    registrarUsuario,
+    registrarAdministrador,
     obtenerPerfil,
-    autenticarUsuario,
+    autenticarAdministrador,
     generarCambio,
     confirmarCuenta,
     validarCambio,

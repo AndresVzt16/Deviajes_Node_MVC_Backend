@@ -2,7 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import db from './config/db.js'
 import usuarioRoutes from './routes/usuarioRoutes.js'
-
+import aerolineaRoutes from './routes/aerolineaRoutes.js'
+import administradorRoutes from './routes/administradorRoutes.js'
+import destinoRoutes from './routes/destinoRoutes.js'
 // hablitar variables de entorno
 dotenv.config();
 
@@ -26,24 +28,9 @@ app.use(express.json())
 
 // definicion de rutas base
 app.use('/usuario', usuarioRoutes)
-
-
-
-app.use('/administrador', (req, res) => {
-
-})
-app.use('/testimoniales', (req, res) => {
-
-})
-app.use('/viajes', (req, res) => {
-
-})
-app.use('/aerolineas', (req, res) => {
-
-})
-app.use('/destinos', (req, res) => {
-
-})
+app.use('/aerolinea', aerolineaRoutes)
+app.use('/admin', administradorRoutes)
+app.use('/destinos', destinoRoutes)
 
 //Subida del servidor
 app.listen(process.env.PORT, (req, res ) => {

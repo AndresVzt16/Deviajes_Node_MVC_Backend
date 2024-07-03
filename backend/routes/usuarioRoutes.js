@@ -23,7 +23,6 @@ router.route('/olvide-password/:token')
 //Private
 router.route('/perfil')
     .get(checkAuth,obtenerPerfil)
-    
 router.put('/perfil/:id', checkAuth, editarPerfil)
 
 
