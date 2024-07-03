@@ -17,9 +17,7 @@ router.post('/olvide-password', generarCambio)
 router.route('/olvide-password/:token')
     .get(validarCambio)
     .post(cambiarPassword)
-
-
-
+    
 //Private
 router.route('/perfil')
     .get(checkAuth,obtenerPerfil)

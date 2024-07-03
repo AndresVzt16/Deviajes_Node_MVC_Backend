@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 
 dotenv.config({path: '.env'})
 
-const db = new Sequelize('deviajes','root', 'root', {
+const db = new Sequelize('deviajes','root', '', {
     host: 'localhost',
     dialect:'mysql',
     define: {

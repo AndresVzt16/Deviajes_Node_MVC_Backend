@@ -1,16 +1,12 @@
-
-
 import Usuario from "../models/Usuario.js"
 import { generarId, generarJWT } from "../helpers/token.js";
 import bcrypt from 'bcrypt'
-
 
 const registrarUsuario = async(req, res) => {
     const{nombre, email, password, telefono} = req.body
     if([nombre, email, password, telefono].includes('')){
         return res.json({msg: "Hay campos vacios", error: true});
     }
-
     try {
         //Evitar usuarios duplicados con (email)
 
@@ -26,16 +22,8 @@ const registrarUsuario = async(req, res) => {
             telefono,
             token: generarId()
           });
-          
           res.json(usuario)
-          
-
-
-    } catch (error) {
-        
-    }
-    
-
+    } catch (error) {}
 }
 
 //Confirmar cuenta
@@ -155,7 +143,6 @@ const editarPerfil = async(req, res) => {
     usuario.telefono = telefono || usuario.telefono
     await usuario.save()
     res.json(usuario)
-
 }
 
 export {
