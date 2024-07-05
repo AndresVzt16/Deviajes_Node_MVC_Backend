@@ -20,6 +20,7 @@ const checkAuthAdmin = async(req, res, next) => {
             return next()
            
         } catch (error) {
+            
             const e = new Error('Token no valido o inexistente')
             res.status(403).json({msg:e.message, error:true})
         }

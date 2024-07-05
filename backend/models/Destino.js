@@ -13,8 +13,10 @@ const Destino = db.define('destinos', {
     imagen: {
         type:DataTypes.STRING,
     }
+    
 })
 export default Destino
+
 
 
 

@@ -53,7 +53,7 @@ const eliminarDestino = async(req, res) => {
 }
 
 const registrarDestino = async(req, res) => {
-    const{nombre, pais} = req.body
+    const{nombre, pais, precio} = req.body
     const destinoExiste = await Destino.findOne({where:{nombre}})
     if(destinoExiste){
         const error = new Error('El destino ya esta registrado');
@@ -62,7 +62,9 @@ const registrarDestino = async(req, res) => {
     const destino = await Destino.create({
         nombre,
         pais,
-        imagen: `${generarId()}.png`
+        imagen: `${generarId()}.png`,
+        precio,
+     
     })
     
     res.json(destino)
