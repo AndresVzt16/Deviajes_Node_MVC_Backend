@@ -4,7 +4,6 @@ import Usuario from "../models/Usuario.js"
 import { generarId, generarJWT } from "../helpers/token.js";
 import bcrypt from 'bcrypt'
 
-
 const registrarUsuario = async(req, res) => {
     const{nombre, email, password, telefono} = req.body
     if([nombre, email, password, telefono].includes('')){
@@ -19,15 +18,16 @@ const registrarUsuario = async(req, res) => {
             const error = new Error('El usuario ya esta registrado')
             return res.status(401).json({msg:error.message, error: true})
         }
-        const usuario = await Usuario.create({
+
+          const usuario = await Usuario.create({
             nombre,
             email,
             password,
             telefono,
-            token: generarId()
+            token: null,
+            confirmado:true
           });
-          
-          res.json(usuario)
+          res.json({msg:"Usuario creado exitosamente"})
           
 
 

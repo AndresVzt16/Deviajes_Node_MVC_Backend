@@ -1,4 +1,4 @@
-import { Destino, Viaje } from "../models/index.js";
+import { Aerolinea, Destino, Viaje } from "../models/index.js";
 
 const crearViaje = async(req, res) => {
     const{
@@ -32,7 +32,22 @@ const crearViaje = async(req, res) => {
 
 }
 const verViajes = async(req, res) => {
-    const viajes = await Viaje.findAll()
+    const viajes = await Viaje.findAll({
+        attributes:['id','fecha_salida', "disponibles"],
+        include:[
+            {
+                model:Destino,
+                attributes:['nombre','pais']
+            },
+            {
+                model:Aerolinea,
+                attributes:['nombre']
+            }
+        ]
+            
+            
+        
+    })
     if(!viajes) {
         return res.status(404).json({msg:"No se encontraron viajes"})
     }

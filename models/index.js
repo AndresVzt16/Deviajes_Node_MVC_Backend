@@ -16,7 +16,7 @@ Boleto.belongsTo(Viaje)
 Boleto.belongsTo(Usuario)
 
 Testimonial.belongsTo(Usuario)
-Testimonial.belongsTo(Boleto)
+Testimonial.belongsTo(Viaje)
 
 
 

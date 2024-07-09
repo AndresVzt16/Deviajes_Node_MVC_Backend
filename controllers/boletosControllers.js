@@ -1,5 +1,5 @@
-import { Boleto, Viaje, Clase } from "../models/index.js"
-
+import { Boleto, Viaje, Clase, Usuario } from "../models/index.js"
+import { Op } from "sequelize"
 const verBoletos = async(req,res)  => {
     const boletos = await Boleto.findAll({where:{usuarioId:req.usuario.id}})
     if(!boletos) {
@@ -32,23 +32,41 @@ const crearBoleto = async(req,res)  => {
         if(clase.nombre === "C"){
             precioViaje *= 1
         }
-
-        const boleto = await Boleto.create({
-            claseId,
-            viajeId,
-            precio: precioViaje,
-            usuarioId
-          });
-          
-          viaje.disponibles -= 1
-          await viaje.save()
-          res.json(boleto)
+        try {
+            const boleto = await Boleto.create({
+                claseId,
+                viajeId,
+                precio: precioViaje,
+                usuarioId
+              });
+              
+              viaje.disponibles -= 1
+              await viaje.save()
+              res.json(boleto)
+        } catch (error) {
+         res.json({msg:"Ocurrio un error interno, intenta mas tarde."})   
+        }
+        
           
 
 
     } catch (error) {
         console.log(error)
     }
+}
+
+const buscarBoleto =  async( req, res) => {
+    const{ email } = req.body
+    const boletos = await Boleto.findAll({
+        include: {
+        model: Usuario,
+        attributes: ['nombre', 'email','telefono', 'createdAt', 'updatedAt'], // Incluir solo estos campos en Post
+        where: {
+            email
+        }
+    }})
+    res.json(boletos)
+
 }
 
 
@@ -70,5 +88,6 @@ const eliminarBoleto = async(req, res) => {
 export{
     verBoletos,
     crearBoleto,
-    eliminarBoleto
+    eliminarBoleto,
+    buscarBoleto
 }

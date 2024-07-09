@@ -32,7 +32,7 @@ const registrarAdministrador = async(req, res) => {
 
 
     } catch (error) {
-     console.log(error)   
+     return res.status(400).json('Se ha producido un error al crear el administrador')
     }
     
 
@@ -52,7 +52,7 @@ const confirmarCuenta = async(req, res) => {
         await administrador.save()
         res.json(administrador)
     } catch (error) {
-        
+        return res.status(400).json('Se ha producido un error al confirmar la cuenta')
     }
 }
 
@@ -99,9 +99,13 @@ const cambiarPassword = async(req, res) => {
     const salt = await bcrypt.genSalt(10)
     administrador.password = await bcrypt.hash(password, salt)
     administrador.token = null;
-    await administrador.save()
-
-    res.json({msg:"Contraseña actualizada correctamente, ya puedes iniciar sesión"})
+    try {
+        await administrador.save()
+        res.json({msg:"Contraseña actualizada correctamente, ya puedes iniciar sesión"})
+    } catch (error) {
+        return res.status(400).json('Se ha producido un error al cambiar el password')
+    }
+    
 }
 
 

@@ -4,7 +4,11 @@ import db from "../config/db.js";
 
 const Testimonial = db.define('testimoniales', {
    
-    Mensaje:{
+    mensaje:{
+        type:DataTypes.STRING,
+        allowNull:false
+    },
+    valoracion:{
         type:DataTypes.INTEGER,
         allowNull:false
     }

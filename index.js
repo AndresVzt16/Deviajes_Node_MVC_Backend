@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors'
 import db from './config/db.js'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 import aerolineaRoutes from './routes/aerolineaRoutes.js'
@@ -9,6 +10,7 @@ import claseRoutes from './routes/claseRoutes.js'
 import viajeRoutes from './routes/viajeRoutes.js'
 import testimonialRoutes from './routes/testimonialRoutes.js'
 import boletosRoutes from './routes/boletosRoutes.js'
+
 // hablitar variables de entorno
 dotenv.config();
 
@@ -23,11 +25,24 @@ try {
 } catch (error) {
     console.log(error)
 }
+const dominiosPermitidos = ['http://localhost:5173']
+
+const corsOptions = {
+    origin : function ( origin, callback) {
+        if(dominiosPermitidos.indexOf(origin) !== -1) {
+            callback(null, true)
+        }else{
+            callback(new Error('No permitido por CORS'))
+        }
+    }
+}
+
 
 //inicializar app 
 const app = express();
 
 
+app.use(cors(corsOptions))
 //habilitar los envios POST
 app.use(express.json())
 
@@ -37,12 +52,12 @@ app.use('/aerolinea', aerolineaRoutes)
 app.use('/admin', administradorRoutes)
 app.use('/destinos', destinoRoutes)
 app.use('/clase', claseRoutes)
-app.use('/destinos', viajeRoutes)
-app.use('/destinos', testimonialRoutes)
+app.use('/testimoniales', testimonialRoutes)
 app.use('/viajes', viajeRoutes)
 app.use('/boletos', boletosRoutes)
 
 //Subida del servidor
+
 app.listen(process.env.PORT, (req, res ) => {
     console.log('Servidor funcionando en el puerto',  process.env.PORT);
 
