@@ -17,7 +17,7 @@ Boleto.belongsTo(Usuario)
 
 Testimonial.belongsTo(Usuario)
 Testimonial.belongsTo(Viaje)
-
+Testimonial.belongsTo(Boleto)
 
 
 export {

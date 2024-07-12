@@ -25,7 +25,7 @@ try {
 } catch (error) {
     console.log(error)
 }
-const dominiosPermitidos = ['http://localhost:5173']
+const dominiosPermitidos = ['https://deviajesmvc.netlify.app']
 
 const corsOptions = {
     origin : function ( origin, callback) {

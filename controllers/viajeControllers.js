@@ -33,7 +33,7 @@ const crearViaje = async(req, res) => {
 }
 const verViajes = async(req, res) => {
     const viajes = await Viaje.findAll({
-        attributes:['id','fecha_salida', "disponibles"],
+        attributes:['id','precio','fecha_salida', "disponibles"],
         include:[
             {
                 model:Destino,
@@ -55,7 +55,20 @@ const verViajes = async(req, res) => {
 }
 const verViaje = async(req, res) => {
     const{id} = req.params
-    const viaje = await Viaje.findOne({where:{id}})
+    const viaje = await Viaje.findOne({
+        where:{id},
+        include:[
+            {
+                model:Aerolinea,
+                attributes:['email','id','nombre','telefono'] 
+
+            },
+            {
+                model:Destino,
+                attributes:['id','nombre','pais'] 
+            }
+        ]
+    })
     if(!viaje) {
         return res.status(404).json({msg:"No se pudo eliminar el viaje"})
     }

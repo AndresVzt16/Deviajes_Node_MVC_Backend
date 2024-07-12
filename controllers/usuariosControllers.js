@@ -131,10 +131,14 @@ const autenticarUsuario = async(req, res) => {
             const error = new Error('Email o contraseña no validos')
             return res.status(404).json({msg:error.message})
         }
+        
 
-        const token = generarJWT(usuario.id);
-
-        res.json({ token });
+        res.json({
+            id:usuario.id, 
+            nombre: usuario.nombre, 
+            email : usuario.email, 
+            token: generarJWT(usuario.id),
+        });
         
 }
 
@@ -142,6 +146,7 @@ const autenticarUsuario = async(req, res) => {
 const obtenerPerfil = (req, res) => {
     const{usuario} = req
     res.json(usuario)
+    
 }
 
 const editarPerfil = async(req, res) => {

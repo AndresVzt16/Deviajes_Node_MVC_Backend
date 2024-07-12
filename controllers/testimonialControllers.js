@@ -2,16 +2,12 @@ import { Op, where } from "sequelize";
 import { Destino, Testimonial, Usuario, Viaje } from "../models/index.js";
 
 const crearTestimonial = async(req, res) => {
-    const {mensaje, valoracion} = req.body
+    const {mensaje, valoracion, boleto} = req.body
     const usuarioId = req.usuario.id
     const{viaje:viajeId} = req.params
 
     const existeTestimonial = await Testimonial.findOne({
-        include: {
-            model: Usuario,
-            attributes: ['nombre', 'email','telefono', 'createdAt', 'updatedAt'], // Incluir solo estos campos en Post
-            
-        },
+        
         where:{
             viajeId,
             usuarioId
@@ -24,28 +20,26 @@ const crearTestimonial = async(req, res) => {
         mensaje,
         usuarioId,
         viajeId,
-        valoracion
+        valoracion,
+        boletoId:boleto
     })
     res.json({msg:"Testimonial creado correctamente"})
     
 }
 const verTestimoniales = async(req, res) => {
     const testimoniales = await Testimonial.findAll({
-        attributes:['mensaje', 'createdAt', 'updatedAt'],
-        include:[
-            {
-            model:Usuario,
-            attributes: ['nombre', 'email']
-        },
-        {
-            model:Viaje,
-            attributes:['fecha_salida', 'disponibles'],
-            include:{
-                model:Destino,
+        attributes:['mensaje', 'createdAt', 'updatedAt', 'id'],
+        include: [
+            {model: Viaje,
+                include:[
+                    {model: Destino}
+                ]
+            },
+            {model:Usuario,
                 attributes:['nombre']
+
             }
-        }
-    ]
+        ]
     })
 
     if(!testimoniales ) {
@@ -80,15 +74,29 @@ const verTestimonialesPorViaje = async(req, res) => {
     res.json(testimoniales)
 }
 const misTestimoniales = async(req, res) => {
-    const testimoniales = await Testimonial.findAll({where:{usuarioId:req.usuario.id}})
+    const testimoniales = await Testimonial.findAll({
+        where:{usuarioId:req.usuario.id},
+        include: [
+            {model: Viaje,
+                include:[
+                    {model: Destino}
+                ]
+            },
+            {model:Usuario,
+                attributes:['nombre']
+
+            }
+        ]
+    })
     if(!testimoniales ) {
-        return res.status(404).json({msg:"No se encontraron testimoniales"})
+        return res.json({testimoniales:{}})
     }
     res.json(testimoniales)
 }   
 const editarTestimonial = async(req, res) => {
     const{id} = req.params
     const testimonial = await Testimonial.findOne({where:{id}})
+    const{mensaje, valoracion} = req.body
     if(!testimonial){
         return res.status(404).json({msg:"No se encontraron testimoniales"})
     }
@@ -101,7 +109,7 @@ const eliminarTestimonial = async(req, res) => {
     const{id} = req.params
     const testimonial = await Testimonial.findOne({where:{id}})
     if(!testimonial){
-        return res.status(404).json({msg:"No se encontraron testimoniales"})
+        return res.status(404).json({msg:"No se encontraro el testimonial"})
     }
 
     await testimonial.destroy()

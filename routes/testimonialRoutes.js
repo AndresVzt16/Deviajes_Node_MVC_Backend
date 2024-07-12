@@ -10,9 +10,9 @@ router.get('/mis-testimoniales',checkAuth, misTestimoniales)
 
 
 router.route('/:id')
-    
     .put(checkAuth,editarTestimonial)
     .delete( checkAuth, eliminarTestimonial)
+    
 router.route('/:viaje')
     .get(verTestimonialesPorViaje)
     .post(checkAuth,crearTestimonial)

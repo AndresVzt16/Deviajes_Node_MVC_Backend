@@ -62,9 +62,11 @@ const eliminarClase = async(req, res) => {
 }
 
 
+
 export{
     verClases,
     crearClase,
     editarClase,
     eliminarClase
+    
 }
