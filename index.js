@@ -25,7 +25,7 @@ try {
 } catch (error) {
     console.log(error)
 }
-const dominiosPermitidos = ['https://deviajesmvc.netlify.app']
+const dominiosPermitidos = [process.env.FRONTEND_URL]
 
 const corsOptions = {
     origin : function ( origin, callback) {
